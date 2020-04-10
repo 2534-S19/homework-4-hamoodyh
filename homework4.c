@@ -39,7 +39,6 @@ int main(void)
     // TODO: Enable EUSCI_A0
     UART_enableModule(EUSCI_A0_BASE);
 
-
     while(1)
     {
         // TODO: Check the receive interrupt flag to see if a received character is available.
@@ -72,7 +71,7 @@ int main(void)
             char line[] = "\n\n\r2534 is the best course in the curriculum!\r\n\n";
 
             int i = 0;
-            for(i = 0; (arr[i] == 5); i++)
+            for(i = 0; (line[i] == 5); i++)
             {
                 if (UART_getInterruptStatus(EUSCI_A0_BASE, EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG ))
                     UART_transmitData(EUSCI_A0_BASE, line[i]);
