@@ -7,7 +7,7 @@ int main(void)
     char *response = "\n\n\r2534 is the best course in the curriculum!\r\n\n";
 
     // TODO: Declare the variables that main uses to interact with your state machine.
-    bool finished = false;
+    bool done = false;
     // Stops the Watchdog timer.
     initBoard();
     // TODO: Declare a UART config struct as defined in uart.h.
@@ -58,7 +58,7 @@ int main(void)
 
                 UART_transmitData(EUSCI_A0_BASE, rChar);
 
-                finished = charFSM(rChar);
+                done = charFSM(rChar);
             }
 
 
@@ -66,12 +66,12 @@ int main(void)
         //       Check the transmit interrupt flag prior to transmitting each character and moving on to the next one.
         //       Make sure to reset the success variable after transmission.
 
-        if (finished)
+        if (done == true)
         {
             char line[] = "\n\n\r2534 is the best course in the curriculum!\r\n\n";
 
             int i = 0;
-            for(i = 0; (line[i] == 5); i++)
+            for(i = 0; i <= 48; i++)
             {
                 if (UART_getInterruptStatus(EUSCI_A0_BASE, EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG ))
                     UART_transmitData(EUSCI_A0_BASE, line[i]);
@@ -91,7 +91,7 @@ void initBoard()
 // TODO: FSM for detecting character sequence.
 bool charFSM(char rChar)
 {
-    bool finished = false;
+    bool done = false;
 
     static char_state_t currentStatus = SX;
 
@@ -120,7 +120,7 @@ bool charFSM(char rChar)
             if (rChar == '4')
             {
                 currentStatus = S2534;
-                finished = true;
+                done = true;
             }
             else
                 currentStatus = SX;
@@ -131,5 +131,5 @@ bool charFSM(char rChar)
             break;
     }
 
-    return finished;
+    return done;
 }
