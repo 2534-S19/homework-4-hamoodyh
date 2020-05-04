@@ -32,7 +32,7 @@ int main(void)
            GPIO_PORT_P1, GPIO_PIN2, GPIO_PRIMARY_MODULE_FUNCTION);
 
     GPIO_setAsPeripheralModuleFunctionOutputPin(
-            GPIO_PORT_P1, GPIO_PIN2, GPIO_PRIMARY_MODULE_FUNCTION);
+            GPIO_PORT_P1, GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
     // TODO: Initialize EUSCI_A0
     UART_initModule(EUSCI_A0_BASE, &uartConfig);
 
@@ -53,31 +53,43 @@ int main(void)
             }
         // TODO: If an actual character was received, echo the character to the terminal AND use it to update the FSM.
         //       Check the transmit interrupt flag prior to transmitting the character.
-        if(rChar != 0xFF0)
+        if(rChar != 0xFF)
+        {
+            if(UART_getInterruptStatus(EUSCI_A0_BASE, EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG) == EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG)
             {
-
                 UART_transmitData(EUSCI_A0_BASE, rChar);
 
                 done = charFSM(rChar);
             }
 
 
+
         // TODO: If the FSM indicates a successful string entry, transmit the response string.
         //       Check the transmit interrupt flag prior to transmitting each character and moving on to the next one.
         //       Make sure to reset the success variable after transmission.
 
-        if (done == true)
-        {
-            char line[] = "\n\n\r2534 is the best course in the curriculum!\r\n\n";
-
-            int i = 0;
-            for(i = 0; i <= 48; i++)
+            if (done == true)
             {
-                if (UART_getInterruptStatus(EUSCI_A0_BASE, EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG ))
-                    UART_transmitData(EUSCI_A0_BASE, line[i]);
+            //char line[] = "\n\n\r2534 is the best course in the curriculum!\r\n\n";
 
 
+                int i = 0;
+                for (i = 0 ; response[i]!='\0'; i++)
+                {
+                    i--;
+                    if (UART_getInterruptStatus(EUSCI_A0_BASE, EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG) == EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG)
+
+                        {
+                            i++;
+
+                            UART_transmitData(EUSCI_A0_BASE, response[i]);
+
+                        }
+
+
+                }
             }
+
         }
 
     }
@@ -89,6 +101,7 @@ void initBoard()
 }
 
 // TODO: FSM for detecting character sequence.
+// Switch statements found on Course Embedded Systems Manual
 bool charFSM(char rChar)
 {
     bool done = false;
